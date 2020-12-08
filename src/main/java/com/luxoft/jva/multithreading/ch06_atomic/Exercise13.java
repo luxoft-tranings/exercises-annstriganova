@@ -27,10 +27,47 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author BKuczynski.
  */
 public class Exercise13 {
+	private static Ball ball = new Ball();
+	private static final int LOOP = 100;
 
-	public static void main(String[] args) {
-		// your code goes here
+	public static class Ping implements Runnable {
+		@Override
+		public void run() {
+			for (int i = 0; i < LOOP; i++) {
+				ball.ping.getAndIncrement();
+				System.out.println("Ping: " + ball.ping);
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
-}
+	public static class Pong implements Runnable {
 
+		@Override
+		public void run() {
+			for (int i = 0; i < LOOP; i++) {
+				ball.pong.getAndIncrement();
+				System.out.println("Pong: " + ball.pong);
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public static class Ball {
+		AtomicInteger ping = new AtomicInteger(0);
+		AtomicInteger pong = new AtomicInteger(0);
+	}
+
+	public static void main(String[] args) {
+		new Thread(new Exercise13.Ping()).start();
+		new Thread(new Exercise13.Pong()).start();
+	}
+}
