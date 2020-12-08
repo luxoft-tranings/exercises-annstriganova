@@ -25,9 +25,52 @@ package com.luxoft.jva.multithreading.ch06_atomic;
  * @author BKuczynski.
  */
 public class Exercise12 {
+	private static Ball ball = new Ball();
+	private static final int LOOP = 10;
 
-	public static void main(String[] args) {
-		// your code goes here
+	public static class Ping implements Runnable {
+		@Override
+		public void run() {
+			for (int i = 0; i < LOOP; i++) {
+				ball.ping++;
+				System.out.println("Ping: " + ball.ping);
+/*				while (ball.pong != i) {
+					// do nothing
+				}*/
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
+	public static class Pong implements Runnable {
+		@Override
+		public void run() {
+			for (int i = 0; i < LOOP; i++) {
+/*				while (ball.ping != i) {
+					// do nothing
+				}*/
+				ball.pong++;
+				System.out.println("Pong: " + ball.pong);
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public static class Ball {
+		volatile int ping = 0;
+		volatile int pong = 0;
+	}
+
+	public static void main(String[] args) {
+		new Thread(new Ping()).start();
+		new Thread(new Pong()).start();
+	}
 }
